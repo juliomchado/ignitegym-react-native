@@ -5,6 +5,7 @@ import { Center, GluestackUIProvider, Text } from "@gluestack-ui/themed";
 import { config } from "./config/gluestack-ui.config";
 import { SignIn } from "@screens/SignIn";
 import { SignUp } from "@screens/SignUp";
+import { Routes } from "./src/routes";
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_700Bold, Roboto_400Regular });
@@ -16,7 +17,7 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      {fontsLoaded ? <SignUp /> : <View />}
+      {fontsLoaded ? <Routes /> : <View />}
     </GluestackUIProvider>
   );
 }
