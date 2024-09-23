@@ -1,6 +1,6 @@
 import { Heading, VStack, Text } from "@gluestack-ui/themed";
 import { ScreenHeader } from "@components/ScreenHeader";
-import { HistoryCard } from "@components/HistoryCards";
+import { HistoryCard } from "@components/HistoryCard";
 import { useState } from "react";
 import { SectionList } from "react-native";
 
