@@ -5,6 +5,9 @@ import {
   Text,
   VStack,
   ScrollView,
+  Toast,
+  useToast,
+  ToastTitle,
 } from "@gluestack-ui/themed";
 
 import { useForm, Controller } from "react-hook-form";
@@ -17,6 +20,8 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
 
 type FormDataProps = {
   name: string;
@@ -39,6 +44,8 @@ const signUpSchema = yup.object({
 });
 
 export function SignUp() {
+  const toast = useToast();
+
   const {
     control,
     handleSubmit,
@@ -53,8 +60,26 @@ export function SignUp() {
     navigation.goBack();
   }
 
-  function handleSignUp(data: FormDataProps) {
-    console.log(data);
+  async function handleSignUp({ name, email, password }: FormDataProps) {
+    try {
+      const response = await api.post("/users", { name, email, password });
+
+      console.log(response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : "Não foi possível realizar o cadastro. Tente novamente mais tarde.";
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <Toast mt="$12" action="error" bgColor="$red500">
+            <ToastTitle color="$white">{title}</ToastTitle>
+          </Toast>
+        ),
+      });
+    }
   }
 
   return (
