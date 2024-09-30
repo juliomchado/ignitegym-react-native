@@ -5,6 +5,9 @@ import {
   Text,
   VStack,
   ScrollView,
+  Toast,
+  ToastTitle,
+  useToast,
 } from "@gluestack-ui/themed";
 
 import { useNavigation } from "@react-navigation/native";
@@ -18,18 +21,27 @@ import * as yup from "yup";
 
 import BackgroundImg from "@assets/background.png";
 import Logo from "@assets/logo.svg";
+import { useAuth } from "@hooks/useAuth";
+import { AppError } from "@utils/AppError";
+import { useState } from "react";
 
 type FormDataProps = {
-  name: string;
+  email: string;
   password: string;
 };
 
 const signUpSchema = yup.object({
-  name: yup.string().required("Informe o nome"),
+  email: yup.string().required("Informe o email"),
   password: yup.string().required("Informe a senha"),
 });
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { signIn } = useAuth();
+
+  const toast = useToast();
+
   const {
     control,
     handleSubmit,
@@ -44,8 +56,29 @@ export function SignIn() {
     navigation.navigate("signUp");
   }
 
-  function handleSignIn(data: FormDataProps) {
-    console.log(data);
+  async function handleSignIn(data: FormDataProps) {
+    try {
+      setIsLoading(true);
+
+      await signIn(data.email, data.password);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Não foi possível entrar. Tente novamente mais tarde.";
+
+      setIsLoading(false);
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <Toast mt="$12" action="error" bgColor="$red500">
+            <ToastTitle color="$white">{title}</ToastTitle>
+          </Toast>
+        ),
+      });
+    }
   }
 
   return (
@@ -76,13 +109,13 @@ export function SignIn() {
 
             <Controller
               control={control}
-              name="name"
+              name="email"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Nome"
+                  placeholder="E-mail"
                   onChangeText={onChange}
                   value={value}
-                  errorMessage={errors.name?.message}
+                  errorMessage={errors.email?.message}
                 />
               )}
             />
@@ -101,7 +134,11 @@ export function SignIn() {
               )}
             />
 
-            <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
+            <Button
+              title="Acessar"
+              onPress={handleSubmit(handleSignIn)}
+              isLoading={isLoading}
+            />
           </Center>
           <Center flex={1} justifyContent="flex-end" mt="$4">
             <Text color="$gray100" fontSize="$sm" mb="$3" fontFamily="$body">
