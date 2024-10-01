@@ -1,4 +1,5 @@
 import { Center, Heading } from "@gluestack-ui/themed";
+import { useAuth } from "@hooks/useAuth";
 
 type Props = {
   title: string;
