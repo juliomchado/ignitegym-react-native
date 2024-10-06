@@ -36,7 +36,9 @@ export function Home() {
   async function fetchGroups() {
     try {
       const response = await api.get("/groups");
+
       setGroups(response.data);
+      setGroupSelected(response.data[0]);
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title = isAppError
